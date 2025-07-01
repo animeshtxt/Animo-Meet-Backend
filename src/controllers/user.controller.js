@@ -49,14 +49,12 @@ const login = async (req, res) => {
       let token = crypto.randomBytes(20).toString("hex");
       user.token = token;
       await user.save();
-      return res
-        .status(status.OK)
-        .json({
-          token: token,
-          message: "login successful",
-          username: user.username,
-          name: user.name,
-        });
+      return res.status(status.OK).json({
+        token: token,
+        message: "login successful",
+        username: user.username,
+        name: user.name,
+      });
     } else {
       return res
         .status(status.UNAUTHORIZED)
@@ -68,33 +66,12 @@ const login = async (req, res) => {
   }
 };
 
-const validateToken = async (req, res) => {
+const verifyUser = async (req, res) => {
   try {
-    const authHeader = req.headers["authorization"]; // e.g. "Bearer <token>"
-    let token;
+    const user = req.user;
 
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1]; // This gets the token part
-    } else {
-      token = null;
-    }
-    if (!token || token === "") {
-      console.log("No token received");
-      return res
-        .status(status.NO_CONTENT)
-        .json({ message: "no token provided" });
-    }
-
-    const user = await User.findOne({ token });
-    if (!user) {
-      return res
-        .status(status.UNAUTHORIZED)
-        .json({ message: "Invalid token, login again" });
-    }
-    console.log("token verified successfully");
-    console.log(user.name);
     return res.status(status.OK).json({
-      message: "Token validated",
+      message: "User validated",
       name: user.name,
       username: user.username,
     });
@@ -102,4 +79,5 @@ const validateToken = async (req, res) => {
     return res.status(status.INTERNAL_SERVER_ERROR).json({ message: `${e}` });
   }
 };
-export { login, register, validateToken };
+
+export { login, register, verifyUser };

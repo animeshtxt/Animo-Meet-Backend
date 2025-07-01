@@ -6,6 +6,7 @@ import cors from "cors";
 import { connectToSocket } from "./controllers/socketManager.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/users.routes.js";
+import meetingRoutes from "./routes/meeting.routes.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/meeting", meetingRoutes);
 
 app.get("/", (req, res) => {
   res.send("I am home");
