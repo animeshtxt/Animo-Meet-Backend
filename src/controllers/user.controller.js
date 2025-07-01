@@ -5,10 +5,9 @@ import crypto from "crypto";
 
 const register = async (req, res) => {
   const { name, username, password } = req.body;
-  console.log(`name: ${name} \nusername : ${username} \npassword: ${password}`);
 
   try {
-    const existingUser = await User.findOne({ username });
+    // const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res
         .status(status.CONFLICT)
@@ -33,7 +32,6 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  console.log("login request");
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ message: "Please provide all credentials" });
@@ -45,7 +43,7 @@ const login = async (req, res) => {
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      console.log(isMatch);
+      // console.log(isMatch);
       let token = crypto.randomBytes(20).toString("hex");
       user.token = token;
       await user.save();

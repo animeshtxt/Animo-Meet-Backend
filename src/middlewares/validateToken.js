@@ -11,7 +11,7 @@ const validateToken = async (req, res, next) => {
       token = null;
     }
     if (!token || token === "") {
-      console.log("No token received");
+      // console.log("No token received");
       return res
         .status(status.NO_CONTENT)
         .json({ message: "no token provided" });
@@ -23,13 +23,9 @@ const validateToken = async (req, res, next) => {
         .status(status.UNAUTHORIZED)
         .json({ message: "Invalid token, login again" });
     }
-    console.log("token verified successfully");
-    console.log(user.name);
-    // return res.status(status.OK).json({
-    //   message: "Token validated",
-    //   name: user.name,
-    //   username: user.username,
-    // });
+    // console.log("token verified successfully");
+    // console.log(user.name);
+
     req.user = user;
     next();
   } catch (e) {

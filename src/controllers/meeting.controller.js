@@ -4,7 +4,6 @@ import { status } from "http-status";
 const checkMeetCode = async (req, res) => {
   try {
     const { meetingCode } = req.params;
-    console.log("checking code : ", meetingCode);
     const existingMeeting = await Meeting.findOne({ meetingCode });
     if (existingMeeting) {
       return res.status(status.FOUND).json({
@@ -18,7 +17,6 @@ const checkMeetCode = async (req, res) => {
     });
 
     const savedMeeting = await newMeeting.save();
-    console.log("new meeting created successfully : \n", savedMeeting);
     return res.status(status.OK).json({
       message: `new meeting created successfully, code: ${meetingCode}`,
     });
@@ -52,4 +50,24 @@ const doesMeetExist = async (req, res) => {
   }
 };
 
-export { checkMeetCode, doesMeetExist };
+const checkIfHost = async (req, res) => {
+  try {
+    const { username, meetingCode } = req.query;
+    const meeting = await Meeting.findOne({ meetingCode });
+    if (meeting && meeting.hostUsername === username) {
+      return res
+        .status(status.OK)
+        .json({ message: `${username} is host of this meeting` });
+    } else {
+      return res
+        .status(status.FORBIDDEN)
+        .json({ message: `${username} is not the host of this meeting` });
+    }
+  } catch (e) {
+    res
+      .status(status.INTERNAL_SERVER_ERROR)
+      .json({ message: `Some internal server error occured : ${e}` });
+  }
+};
+
+export { checkMeetCode, doesMeetExist, checkIfHost };

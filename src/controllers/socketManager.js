@@ -17,8 +17,8 @@ export const connectToSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("something is connected");
-    console.log("Connected clients on connect :", io.engine.clientsCount);
+    // console.log("something is connected");
+    // console.log("Connected clients on connect :", io.engine.clientsCount);
     socket.on("join-call", (path, username, name) => {
       if (connections[path] === undefined) {
         connections[path] = [];
@@ -53,8 +53,8 @@ export const connectToSocket = (server) => {
       }
     });
     socket.on("signal", (toId, message) => {
-      console.log("toId : " + toId);
-      console.log("message : ", message);
+      // console.log("toId : " + toId);
+      // console.log("message : ", message);
       io.to(toId).emit("signal", socket.id, message);
     });
 
@@ -79,7 +79,7 @@ export const connectToSocket = (server) => {
           time: time,
           "socket-id-sender": socket.id,
         });
-        console.log("message", matchingRoom, ":", sender, data, time);
+        // console.log("message", matchingRoom, ":", sender, data, time);
         connections[matchingRoom].forEach((elem) => {
           io.to(elem).emit("chat-message", sender, data, time, socket.id);
         });
@@ -87,10 +87,10 @@ export const connectToSocket = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log(
-        "Connected clients after disconnect:",
-        io.engine.clientsCount
-      );
+      // console.log(
+      //   "Connected clients after disconnect:",
+      //   io.engine.clientsCount
+      // );
       let diffTime = Math.abs(timeOnline[socket.id] - new Date());
       let key;
 
