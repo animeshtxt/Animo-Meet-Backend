@@ -1,9 +1,13 @@
 import { Meeting } from "../models/meeting.model.js";
 import { status } from "http-status";
+import logger from "../utils/logger.js";
 
 const checkMeetCode = async (req, res) => {
+  logger.dev("checkMeetCode called");
   try {
     const { meetingCode } = req.params;
+    logger.dev("Checking meeting code in checkMeetCode: " + meetingCode);
+
     const existingMeeting = await Meeting.findOne({ meetingCode });
     if (existingMeeting) {
       return res.status(status.FOUND).json({
@@ -21,7 +25,7 @@ const checkMeetCode = async (req, res) => {
       message: `new meeting created successfully, code: ${meetingCode}`,
     });
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     return res
       .status(status.INTERNAL_SERVER_ERROR)
       .json({ message: `Internal server error : ${e}` });
@@ -31,7 +35,7 @@ const checkMeetCode = async (req, res) => {
 const doesMeetExist = async (req, res) => {
   try {
     const { meetingCode } = req.params;
-    console.log("checking code : ", meetingCode);
+    logger.dev("checking code in doesMeetExist: ", meetingCode);
     const existingMeeting = await Meeting.findOne({ meetingCode });
     if (existingMeeting) {
       return res.status(status.OK).json({
@@ -43,7 +47,7 @@ const doesMeetExist = async (req, res) => {
         .json({ message: "No such meeting found" });
     }
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     return res
       .status(status.INTERNAL_SERVER_ERROR)
       .json({ message: `Internal server error : ${e}` });
@@ -70,4 +74,26 @@ const checkIfHost = async (req, res) => {
   }
 };
 
-export { checkMeetCode, doesMeetExist, checkIfHost };
+const getPrevMeets = async (req, res) => {
+  try {
+    logger.dev("getPrevMeets called ");
+    const { username } = req.params;
+    const meeting = await Meeting.find({ hostUsername: username });
+    if (meeting) {
+      const meets = [];
+      meeting.forEach((m) => {
+        meets.push(m.meetingCode);
+      });
+      logger.dev(meets);
+      res.status(status.OK).json(meets);
+    } else {
+      res
+        .status(status.NOT_FOUND)
+        .json({ message: "No previous meetings found" });
+    }
+  } catch (e) {
+    logger.error(e);
+  }
+};
+
+export { checkMeetCode, doesMeetExist, checkIfHost, getPrevMeets };
