@@ -18,17 +18,18 @@ jobs:
 
     steps:
       - name: Backup .env
-        run:
+        run: |
           # Use -p to ensure the directory exists, and use $RUNNER_TEMP
           if [ -f .env ]; then
-          cp .env $RUNNER_TEMP/.env_backup
+            cp .env $RUNNER_TEMP/.env_backup
           fi
 
       - uses: actions/checkout@v4
 
       - name: Restore .env
-        run: if [ -f $RUNNER_TEMP/.env_backup ]; then
-          mv $RUNNER_TEMP/.env_backup .env
+        run: |
+          if [ -f $RUNNER_TEMP/.env_backup ]; then
+            mv $RUNNER_TEMP/.env_backup .env
           fi
 
       - name: Use Node.js ${{ matrix.node-version }}
