@@ -5,11 +5,10 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
-  
+    branches: ["main"]
+
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
@@ -18,22 +17,26 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Backup .env
-      run: |
-        if [ -f .env ]; then mv .env /temp/env_backup; fi
-        
-    - uses: actions/checkout@v4
+      - name: Backup .env
+        run:
+          # Use -p to ensure the directory exists, and use $RUNNER_TEMP
+          if [ -f .env ]; then
+          cp .env $RUNNER_TEMP/.env_backup
+          fi
 
-    - name: Restore .env
-      run: |
-        if [ -f /temp/env_backup ]; then mv /temp/env_backup .env; fi
-        
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    # - run: npm testtb4
-    - run: sudo pm2 restart animo-meet-backend
+      - uses: actions/checkout@v4
+
+      - name: Restore .env
+        run: if [ -f $RUNNER_TEMP/.env_backup ]; then
+          mv $RUNNER_TEMP/.env_backup .env
+          fi
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      # - run: npm testtb4
+      - run: sudo pm2 restart animo-meet-backend
