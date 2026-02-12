@@ -1,5 +1,6 @@
 import { status } from "http-status";
 import { User } from "../models/user.model.js";
+import logger from "../utils/logger.js";
 const validateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"]; // e.g. "Bearer <token>"
@@ -11,9 +12,9 @@ const validateToken = async (req, res, next) => {
       token = null;
     }
     if (!token || token === "") {
-      // console.log("No token received");
+      logger.dev("No token received");
       return res
-        .status(status.NO_CONTENT)
+        .status(status.UNAUTHORIZED)
         .json({ message: "no token provided" });
     }
 
@@ -23,13 +24,13 @@ const validateToken = async (req, res, next) => {
         .status(status.UNAUTHORIZED)
         .json({ message: "Invalid token, login again" });
     }
-    // console.log("token verified successfully");
-    // console.log(user.name);
+    logger.dev("token verified successfully");
+    logger.dev(user.name);
 
     req.user = user;
     next();
   } catch (e) {
-    console.log(e);
+    logger.dev(e);
     return res.status(status.INTERNAL_SERVER_ERROR).json({ message: `${e}` });
   }
 };

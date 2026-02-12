@@ -3,7 +3,7 @@ import { status } from "http-status";
 import bcrypt, { hash } from "bcrypt";
 import crypto from "crypto";
 
-const register = async (req, res) => {
+const signup = async (req, res) => {
   const { name, username, password } = req.body;
 
   try {
@@ -26,7 +26,7 @@ const register = async (req, res) => {
       .status(status.CREATED)
       .json({ message: "User registered successfully" });
   } catch (e) {
-    console.log(`Error in register route : \nERROR = \n ${e}`);
+    logger.error(`Error in register route : \nERROR = \n ${e}`);
     return res.status(500).json({ message: `${e}` });
   }
 };
@@ -59,7 +59,7 @@ const login = async (req, res) => {
         .json({ message: "invalid credentials" });
     }
   } catch (e) {
-    console.log(`Error in login route : \nERROR = \n ${e}`);
+    logger.error(`Error in login route : \nERROR = \n ${e}`);
     return res.status(500).json({ message: `${e}` });
   }
 };
@@ -72,10 +72,12 @@ const verifyUser = async (req, res) => {
       message: "User validated",
       name: user.name,
       username: user.username,
+      time: Date.now(),
     });
   } catch (e) {
+    logger.error(`Error in verifyUser route : \nERROR = \n ${e}`);
     return res.status(status.INTERNAL_SERVER_ERROR).json({ message: `${e}` });
   }
 };
 
-export { login, register, verifyUser };
+export { login, signup, verifyUser };
