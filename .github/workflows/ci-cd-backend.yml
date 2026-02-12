@@ -40,4 +40,4 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       # - run: npm testtb4
-      - run: sudo pm2 restart animo-meet-backend
+      - run: pm2 restart animo-meet-backend
