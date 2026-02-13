@@ -8,12 +8,15 @@ let usernames = {};
 let names = {};
 
 export const connectToSocket = (server) => {
+  // Socket.IO CORS Configuration - must match Express CORS
+  const allowedOrigins = [process.env.FRONTEND_URL].filter(Boolean); // Remove undefined values
+
+  console.log("🔌 Socket.IO CORS Configuration:");
+  console.log("  - Allowed Origins:", allowedOrigins);
+
   const io = new Server(server, {
     cors: {
-      origin:
-        process.env.NODE_ENV === "production"
-          ? process.env.FRONTEND_URL || "https://yourdomain.com"
-          : "*",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
       credentials: true,
     },
