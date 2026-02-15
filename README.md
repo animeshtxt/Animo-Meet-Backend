@@ -2,6 +2,8 @@
 
 A robust Node.js backend server for the Animo Meet video conferencing application. Built with Express.js and Socket.IO, this server handles real-time WebRTC signaling, user authentication, meeting management, and persistent data storage using MongoDB.
 
+**Note**: You can visit the Frontend repository [here](https://github.com/animeshtxt/Animo-Meet-Frontend).
+
 ## 🚀 Features
 
 ### Core Functionality
