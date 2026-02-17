@@ -169,7 +169,10 @@ export const connectToSocket = (server) => {
       },
     );
 
-    socket.on("chat-message", (sender, data, time) => {
+    socket.on("chat-message", ({ sender, data, time, socketIdSender }) => {
+      logger.dev(
+        `Message received: \nMessagee: ${data} \n Time: ${time} \n SocketIdSender: ${socketIdSender}`,
+      );
       const [matchingRoom, found] = Object.entries(connections).reduce(
         ([room, isFound], [roomKey, roomValue]) => {
           if (!isFound && roomValue.includes(socket.id)) {
@@ -180,6 +183,7 @@ export const connectToSocket = (server) => {
         ["", false],
       );
       if (found === true) {
+        logger.dev("Message found in room: ", matchingRoom);
         if (messages[matchingRoom] === undefined) {
           messages[matchingRoom] = [];
         }
@@ -188,11 +192,27 @@ export const connectToSocket = (server) => {
           sender: sender,
           data: data,
           time: time,
-          "socket-id-sender": socket.id,
+          socketIdSender: socketIdSender,
         });
-        connections[matchingRoom].forEach((elem) => {
-          io.to(elem).emit("chat-message", sender, data, time, socket.id);
-        });
+        try {
+          // connections[matchingRoom].forEach((elem) => {
+          //   io.to(elem).emit("chat-message", {
+          //     sender: sender,
+          //     data: data,
+          //     time: time,
+          //     socketIdSender: socketIdSender,
+          //   });
+          // });
+          io.to(matchingRoom).emit("chat-message", {
+            sender: sender,
+            data: data,
+            time: time,
+            socketIdSender: socketIdSender,
+          });
+          logger.dev("Chat message sent successfully");
+        } catch (err) {
+          logger.error("Error in sending chat message: ", err);
+        }
       }
     });
 
