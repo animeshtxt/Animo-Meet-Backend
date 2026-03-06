@@ -38,16 +38,22 @@ const doesMeetExist = async (req, res) => {
     logger.dev("checking code in doesMeetExist: ", meetingCode);
     const existingMeeting = await Meeting.findOne({ meetingCode });
     if (existingMeeting) {
+      logger.dev("Meeting found in doesMeetExist ", existingMeeting);
       return res.status(status.OK).json({
+        exists: true,
         message: "Meeting found",
+        meeting: existingMeeting,
       });
     } else {
+      logger.dev(
+        "Meeting with code " + meetingCode + " not found in doesMeetExist",
+      );
       return res
-        .status(status.NOT_FOUND)
-        .json({ message: "No such meeting found" });
+        .status(status.OK)
+        .json({ exists: false, message: "No such meeting found" });
     }
   } catch (e) {
-    logger.error(e);
+    logger.error(`Error in doesMeetExist : ${e}`);
     return res
       .status(status.INTERNAL_SERVER_ERROR)
       .json({ message: `Internal server error : ${e}` });
@@ -68,6 +74,7 @@ const checkIfHost = async (req, res) => {
         .json({ message: `${username} is not the host of this meeting` });
     }
   } catch (e) {
+    logger.error(`Error in checkIfHost : ${e}`);
     res
       .status(status.INTERNAL_SERVER_ERROR)
       .json({ message: `Some internal server error occured : ${e}` });
@@ -92,7 +99,7 @@ const getPrevMeets = async (req, res) => {
         .json({ message: "No previous meetings found" });
     }
   } catch (e) {
-    logger.error(e);
+    logger.error(`Error in getPrevMeets : ${e}`);
   }
 };
 
