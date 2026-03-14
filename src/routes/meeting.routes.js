@@ -1,5 +1,5 @@
 import {
-  checkMeetCode,
+  createMeet,
   doesMeetExist,
   checkIfHost,
   getPrevMeets,
@@ -9,7 +9,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.route("/check-code/:meetingCode").get(validateToken, checkMeetCode);
+router.route("/create-meet/:meetingCode").post(validateToken, createMeet);
 router.route("/check-meet/:meetingCode").get(doesMeetExist);
 router.route("/check-host").get(checkIfHost);
 router.route("/prev-meets/:username").get(validateToken, getPrevMeets);

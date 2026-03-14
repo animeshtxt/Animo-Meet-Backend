@@ -2,11 +2,11 @@ import { Meeting } from "../models/meeting.model.js";
 import { status } from "http-status";
 import logger from "../utils/logger.js";
 
-const checkMeetCode = async (req, res) => {
-  logger.dev("checkMeetCode called");
+const createMeet = async (req, res) => {
+  logger.dev("createMeet called");
   try {
     const { meetingCode } = req.params;
-    logger.dev("Checking meeting code in checkMeetCode: " + meetingCode);
+    logger.dev("Checking meeting code in createMeet: " + meetingCode);
 
     const existingMeeting = await Meeting.findOne({ meetingCode });
     if (existingMeeting) {
@@ -103,4 +103,4 @@ const getPrevMeets = async (req, res) => {
   }
 };
 
-export { checkMeetCode, doesMeetExist, checkIfHost, getPrevMeets };
+export { createMeet, doesMeetExist, checkIfHost, getPrevMeets };
