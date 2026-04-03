@@ -39,7 +39,7 @@ const validateToken = async (req, res, next) => {
 
     req.user = user;
     */
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
     if (!token) {
       logger.dev("No token received");
       return res
@@ -58,7 +58,7 @@ const validateToken = async (req, res, next) => {
       next();
     });
   } catch (e) {
-    logger.dev(e);
+    logger.error(e);
     return res.status(status.INTERNAL_SERVER_ERROR).json({ message: `${e}` });
   }
 };
