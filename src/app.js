@@ -21,7 +21,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 console.log("🌐 CORS Configuration:");
 console.log("  - NODE_ENV:", process.env.NODE_ENV);
-console.log("  - FRONTEND_URL from env:", process.env.FRONTEND_URL);
+// console.log("  - FRONTEND_URL from env:", process.env.FRONTEND_URL);
 console.log("  - Allowed Origins:", allowedOrigins);
 
 app.set("port", process.env.PORT || 3000);
