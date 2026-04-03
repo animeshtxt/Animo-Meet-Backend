@@ -15,7 +15,9 @@ const server = createServer(app);
 const io = connectToSocket(server);
 
 // CORS Configuration
-const allowedOrigins = [process.env.FRONTEND_URL].filter(Boolean); // Remove undefined values
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [];
 
 console.log("🌐 CORS Configuration:");
 console.log("  - NODE_ENV:", process.env.NODE_ENV);
