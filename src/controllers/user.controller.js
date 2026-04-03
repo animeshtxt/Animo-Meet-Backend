@@ -2,6 +2,11 @@ import { User } from "../models/user.model.js";
 import { status } from "http-status";
 import bcrypt, { hash } from "bcrypt";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const signup = async (req, res) => {
   const { name, username, password } = req.body;
@@ -22,13 +27,11 @@ const signup = async (req, res) => {
     });
 
     await newUser.save();
-    res
-      .status(status.CREATED)
-      .json({
-        message: "User registered successfully",
-        name: name,
-        username: username,
-      });
+    res.status(status.CREATED).json({
+      message: "User registered successfully",
+      name: name,
+      username: username,
+    });
   } catch (e) {
     logger.error(`Error in register route : \nERROR = \n ${e}`);
     return res.status(500).json({ message: `${e}` });
@@ -48,9 +51,28 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       // console.log(isMatch);
-      let token = crypto.randomBytes(20).toString("hex");
+      // let token = crypto.randomBytes(20).toString("hex");
+
+      const userPayload = {
+        username: user.username,
+        name: user.name,
+        role: "user",
+        lastLogin: new Date().toISOString(),
+      };
+
+      // Sign the token with all the metadata inside
+      const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: "1h" });
       user.token = token;
       await user.save();
+
+      // Set the token in an HttpOnly cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
       return res.status(status.OK).json({
         token: token,
         message: "login successful",
@@ -68,12 +90,17 @@ const login = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  res.clearCookie("token");
+  res.status(status.OK).json({ message: "Logged out successfully" });
+};
+
 const verifyUser = async (req, res) => {
   try {
     const user = req.user;
 
     return res.status(status.OK).json({
-      message: "User validated",
+      token: req.user.token,
       name: user.name,
       username: user.username,
       time: Date.now(),
@@ -84,4 +111,4 @@ const verifyUser = async (req, res) => {
   }
 };
 
-export { login, signup, verifyUser };
+export { login, signup, logout, verifyUser };
