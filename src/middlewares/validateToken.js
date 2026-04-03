@@ -39,8 +39,8 @@ const validateToken = async (req, res, next) => {
 
     req.user = user;
     */
-    console.log("All Cookies:", req.cookies);
-    console.log("All Headers:", req.headers);
+    // console.log("All Cookies:", req.cookies);
+    // console.log("All Headers:", req.headers);
 
     const token = req.cookies?.token;
     if (!token) {
