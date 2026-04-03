@@ -24,7 +24,11 @@ const signup = async (req, res) => {
     await newUser.save();
     res
       .status(status.CREATED)
-      .json({ message: "User registered successfully" });
+      .json({
+        message: "User registered successfully",
+        name: name,
+        username: username,
+      });
   } catch (e) {
     logger.error(`Error in register route : \nERROR = \n ${e}`);
     return res.status(500).json({ message: `${e}` });
