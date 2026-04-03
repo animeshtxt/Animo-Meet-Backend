@@ -7,7 +7,7 @@ import { connectToSocket } from "./controllers/socketManager.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/users.routes.js";
 import meetingRoutes from "./routes/meeting.routes.js";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
@@ -25,6 +25,7 @@ console.log("  - NODE_ENV:", process.env.NODE_ENV);
 console.log("  - Allowed Origins:", allowedOrigins);
 
 app.set("port", process.env.PORT || 3000);
+app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
