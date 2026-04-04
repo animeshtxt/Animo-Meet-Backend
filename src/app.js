@@ -8,8 +8,9 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/users.routes.js";
 import meetingRoutes from "./routes/meeting.routes.js";
 import cookieParser from "cookie-parser";
-dotenv.config();
 
+import getMetrics from "./controllers/metrics.controller.js";
+dotenv.config();
 const app = express();
 const server = createServer(app);
 const io = connectToSocket(server);
@@ -47,7 +48,6 @@ app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/meeting", meetingRoutes);
-
 app.get("/", (req, res) => {
   res.send("I am home");
 });
@@ -70,3 +70,10 @@ const start = async () => {
 };
 
 start();
+
+// Separate internal server ONLY for Prometheus metrics
+const metricsApp = express();
+metricsApp.get("/metrics", getMetrics);
+metricsApp.listen(5000, () =>
+  console.log("Metrics internal server running on 5000"),
+);
