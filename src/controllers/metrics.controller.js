@@ -12,4 +12,12 @@ const getMetrics = async (req, res) => {
   }
 };
 
+// Custom Gauge for connection check
+const heartbeat_metric = new client.Gauge({
+  name: "animo_meet_backend_diagnostic_heartbeat",
+  help: "A constant value to prove Grafana is connected to Animo-Meet",
+});
+
+heartbeat_metric.set(2004);
+
 export default getMetrics;
