@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/users.routes.js";
 import meetingRoutes from "./routes/meeting.routes.js";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 
 import getMetrics from "./controllers/metrics.controller.js";
 dotenv.config();
@@ -44,6 +45,16 @@ app.use(
     credentials: true,
   }),
 );
+// 1. Define a custom 'time' token
+morgan.token("time-ist", () => {
+  return new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+  });
+});
+
+// 2. Use morgan with the custom token in the format string
+app.use(morgan(":time-ist :method :url :status :response-time ms"));
 app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 app.use("/api/v1/users", userRoutes);
