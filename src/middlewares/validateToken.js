@@ -42,7 +42,14 @@ const validateToken = async (req, res, next) => {
     // console.log("All Cookies:", req.cookies);
     // console.log("All Headers:", req.headers);
 
-    const token = req.cookies?.token;
+    // Robust cookie extraction (handles case where cookie-parser might not have run)
+    const token =
+      req.cookies?.token ||
+      req.headers.cookie
+        ?.split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1];
+
     if (!token) {
       logger.dev("No token received");
       return res
@@ -50,17 +57,17 @@ const validateToken = async (req, res, next) => {
         .json({ message: "no token found" });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-      if (err)
-        return res
-          .status(status.UNAUTHORIZED)
-          .json({ message: "Invalid token" });
-      req.user = decoded;
-      req.user.token = token;
-      logger.dev(`User Verified, user: `, decoded);
-      next();
-    });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    req.user.token = token;
+    logger.dev(`User Verified: ${decoded.username}`);
+    next();
   } catch (e) {
+    if (e.name === "JsonWebTokenError" || e.name === "TokenExpiredError") {
+      return res
+        .status(status.UNAUTHORIZED)
+        .json({ message: "Invalid or expired token" });
+    }
     logger.error(e);
     return res.status(status.INTERNAL_SERVER_ERROR).json({ message: `${e}` });
   }
